@@ -1,9 +1,9 @@
 CC=gcc
-CFLAGS=-I.
+CFLAGS=-I. -arch $(shell uname -m)
 
-deps = libmyfunc
+deps = libmyfunc.a
 
-o_files = obj/login_acc.o obj/project.o obj/query1.o obj/query2.o obj/bank_server.o obj/complain.o libmyfunc
+o_files = obj/login_acc.o obj/project.o obj/query1.o obj/query2.o obj/bank_server.o obj/complain.o libmyfunc.a
 out_files = project.out query1.out query2.out bank_server.out complain.out
 
 obj/login_acc.o: login_acc.c
@@ -24,12 +24,12 @@ obj/bank_server.o: bank_server.c
 obj/complain.o: complain.c
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-libmyfunc:obj/login_acc.o
-	ar rs $@ $< 
+libmyfunc.a: obj/login_acc.o	
+	ar rcs $@ $<
 		
 
 
-project.out:project.c
+project.out:project.c libmyfunc.a
 	$(CC) -o $@ $< $(deps) $(CFLAGS)
 
 query1.out: query1.c
@@ -52,3 +52,11 @@ obj:$(o_files)
 
 .PHONY:all
 all: $(out_files) $(o_files)
+
+.PHONY:clean
+# clean: 
+# 	rm -f $(o_files) $(out_files) libmyfunc.a
+# 	rm -rf obj
+# 	mkdir obj
+clean:
+	rm -f *.out obj/*.o
